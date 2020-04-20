@@ -1,0 +1,19 @@
+@import "fonts";
+@import "colours";
+
+header {
+  height: auto;
+  margin: 0 auto;
+  text-align: center;
+
+  h1 {
+    background-color: #333;
+    color: whitesmoke;
+    margin: 0 auto;
+    padding: 1rem;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    font-family: 'Railway Sans', 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+  }
+
+}
