@@ -7,13 +7,13 @@ import { RangeSlider } from './RangeSlider'
 import { Rugplot } from './Rugplot'
 import { Boxplot } from './Boxplot'
 
-import whyDidYouRender from '@welldone-software/why-did-you-render'
+// import whyDidYouRender from '@welldone-software/why-did-you-render'
 
-whyDidYouRender(React, {
-  onlyLogs: true,
-  titleColor: 'green',
-  diffNameColor: 'darkturquoise'
-})
+// whyDidYouRender(React, {
+//   onlyLogs: true,
+//   titleColor: 'green',
+//   diffNameColor: 'darkturquoise'
+// })
 
 // Rugplot.whyDidYouRender = true
 // Map.whyDidYouRender = true

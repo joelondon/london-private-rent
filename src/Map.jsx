@@ -129,7 +129,7 @@ export const Map = props => {
   }
 
   return (
-    <>
+    <div>
       <div className="geocoder">
         <MatGeocoder
           inputPlaceholder="Search"
@@ -165,6 +165,6 @@ export const Map = props => {
           </Source>
         </MapGL>
       </div>
-    </>
+    </div>
   )
 }
