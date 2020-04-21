@@ -22,7 +22,7 @@
   "devDependencies": {
     "typescript": "3.3.3",
     "node-sass": "^4.13.1",
-    "react-scripts": "^3.4.1"
+    "react-scripts": "^2.0.0"
   },
   "engines": {
     "node": "8.x"
@@ -33,5 +33,11 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
