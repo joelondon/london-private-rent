@@ -17,9 +17,12 @@
     "react-async": "10.0.1",
     "react-dom": "^16.10.2",
     "react-map-gl": "5.2.1",
-    "react-mui-mapbox-geocoder": "1.1.1"  },
+    "react-mui-mapbox-geocoder": "1.1.1"
+  },
   "devDependencies": {
-    "react-scripts": "0.9.5"
+    "typescript": "3.3.3",
+    "node-sass": "^4.13.1",
+    "react-scripts": "^3.4.1"
   },
   "engines": {
     "node": "8.x"
