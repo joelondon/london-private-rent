@@ -8,13 +8,20 @@ export const Rugplot = props => {
   initialized null and React will assign it later (see the return statement) */
   const d3Container = useRef(null)
 
-  const { data, width, category, hoveredFeature, setHoveredFeature, setClickedFeature } = props
+  const {
+    data,
+    category,
+    hoveredFeature,
+    setHoveredFeature,
+    setClickedFeature
+  } = props
 
   /* The useEffect Hook is for running side effects outside of React,
   for instance inserting elements into the DOM using D3 */
   useEffect(
     () => {
       if (data && d3Container.current) {
+
         // HELPER for acessing geojson properties
         const getMedian = geojsonFeature =>
           geojsonFeature.properties[category + '-pc_median']
@@ -31,7 +38,7 @@ export const Rugplot = props => {
           (el, i) => [i, el]
         )
 
-        const margin = { top: 0, right: 2, bottom: 0, left: 2 }
+        const margin = { top: 0, right: 32, bottom: 0, left: 0 }
 
         svg.selectAll('rect').data(features)
 
@@ -49,7 +56,7 @@ export const Rugplot = props => {
                 .filter(el => el !== undefined)
             )
           ])
-          .range([margin.left, width - margin.right])
+          .range([margin.left, d3Container.current.getBoundingClientRect().width - margin.right])
 
         const callout = (g, value) => {
           if (!value) return g.style('display', 'none')
@@ -160,7 +167,6 @@ export const Rugplot = props => {
     to next props to decide whether to rerender.
   */ [
       data,
-      width,
       category,
       hoveredFeature,
       setHoveredFeature
@@ -168,8 +174,8 @@ export const Rugplot = props => {
   )
 
   const style = {
-    width: '80vw',
-    margin: '0 10vw',
+    width: '100%',
+    margin: '0 1em',
     height: '38px',
     overflow: 'visible',
     position: 'relative'

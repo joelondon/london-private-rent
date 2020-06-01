@@ -1,7 +1,4 @@
 @import "colours";
-@import "header";
-@import "footer";
-@import "map";
 
 body {
   margin: 0;
@@ -19,28 +16,13 @@ body {
   }
 }
 
-#map {
-  min-height: 40vh;
-
-  .leaflet-bar {
-    border: 1px solid #d9d9d9;
-    @at-root body.dark & {
-      border: unset;
-      a {
-        border: unset;
-      }
-    }
-  }
-
-  .leaflet-control a {
-    background-color: white;
-    color: black;
-
-    @at-root body.dark & {
-      background-color: unset;
-      color: rgba(255, 255, 255, 0.8);
-    }
-    
+.geocoder {
+  z-index: 4;
+  margin: 0 auto 10px;
+  width: 31%;
+  max-width: calc(100% - 200px);
+  transition: width .175s ease-in-out;
+  &:focus-within {
+    width: 69%;
   }
 }
-

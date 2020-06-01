@@ -29,7 +29,11 @@ export const highlightLayer = scheme => {
     type: 'line',
     paint: {
       'line-color': '#fff',
-      'line-opacity': 1
+      'line-opacity': [
+      'case',
+      ['boolean', ['feature-state', 'hover'], false],
+      1,
+      0.5]
     }
   }
 }

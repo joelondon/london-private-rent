@@ -1,13 +1,12 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import Slider from '@material-ui/core/Slider'
+import { Typography, Slider } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    width: '80vw',
+//     width: '100%',
     'text-align': 'center',
-    margin: '1em auto',
+    margin: '1em 1em',
     color: theme.palette.action.active
   },
   pad: {

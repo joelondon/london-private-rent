@@ -8,7 +8,7 @@ export const Boxplot = props => {
   initialized null and React will assign it later (see the return statement) */
   const d3Container = useRef(null)
 
-  const { min, max, data, width, category, clickedFeature } = props
+  const { min, max, data, category, clickedFeature } = props
 
   /* The useEffect Hook is for running side effects outside of React,
   for instance inserting elements into the DOM using D3 */
@@ -36,14 +36,13 @@ export const Boxplot = props => {
           ]
         ]
         const height = 100
-        const width = document.querySelector('body').offsetWidth * 0.8
         const yPos = i => i * 30 + 10
         const textPos = i => yPos(i) + 4
-        const margin = { top: 0, right: 2, bottom: 0, left: 2 }
+        const margin = { top: 0, right: 32, bottom: 0, left: 0 }
         const xPos = d3
           .scaleLinear()
           .domain([min, max])
-          .range([margin.left, width - margin.right])
+          .range([margin.left, d3Container.current.getBoundingClientRect().width - margin.right])
         const format = d3.format('.2s')
         const xAxis = g =>
           g
@@ -62,21 +61,20 @@ export const Boxplot = props => {
             .attr('fill', 'white')
         const decile = 10
         const getMedian = geojsonFeature =>
-            geojsonFeature.properties[category + '-pc_median']
+          geojsonFeature.properties[category + '-pc_median']
         const xQuantile = d3
-            .scaleQuantile()
-            .domain(data.features.map(el => getMedian(el)))
-            .range(d3.range(decile))
+          .scaleQuantile()
+          .domain(data.features.map(el => getMedian(el)))
+          .range(d3.range(decile))
 
-          const viridis = colormap({ colormap: 'viridis', nshades: decile }).map(
-            (el, i) => [i, el]
-          )
+        const viridis = colormap({ colormap: 'viridis', nshades: decile }).map(
+          (el, i) => [i, el]
+        )
 
         svg.call(xAxis)
         svg.call(reverseTicks)
 
         const boxEnter = (selection, dataset, className, half) => {
-
           // could be log
           let gradientIdentifier = 'gradientLinear'
 
@@ -96,19 +94,18 @@ export const Boxplot = props => {
             .attr('offset', '0%')
             .attr('stop-color', '#440154')
 
-
           // linearGradient stops
           const medians = data.features
             .map(feature => getMedian(feature))
             .filter(el => el !== undefined)
             .sort()
-          const stop = Math.round(medians.length/decile)
-          for (let i=1; i<decile; i=i+1){
+          const stop = Math.round(medians.length / decile)
+          for (let i = 1; i < decile; i = i + 1) {
             gradient
               .append('stop')
               .attr('class', 'end')
-              .attr('offset', xPos(medians[i*stop]) / width * 100 + '%')
-              .attr('stop-color', viridis[i][1])            
+              .attr('offset', (xPos(medians[i * stop]) / d3Container.current.getBoundingClientRect().width) * 100 + '%')
+              .attr('stop-color', viridis[i][1])
           }
 
           selection
@@ -218,15 +215,14 @@ export const Boxplot = props => {
       to next props to decide whether to rerender.
     */ [
       data,
-      width,
       category,
       clickedFeature
     ]
   )
 
   const style = {
-    width: '80vw',
-    margin: '0 10vw',
+    width: '100%',
+    margin: '0 1em',
     height: 'auto',
     overflow: 'visible',
     position: 'relative'

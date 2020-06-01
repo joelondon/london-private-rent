@@ -1,9 +1,8 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import Grid from '@material-ui/core/Grid'
 import ToggleButton from '@material-ui/lab/ToggleButton'
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
-import Typography from '@material-ui/core/Typography'
+import { Grid, Typography } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   toggleContainer: {

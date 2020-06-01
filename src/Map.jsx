@@ -6,7 +6,6 @@ import MapGL, {
   FlyToInterpolator
 } from 'react-map-gl'
 import { easeCubic } from 'd3'
-import MatGeocoder from 'react-mui-mapbox-geocoder'
 import { dataLayer, highlightLayer } from './map-style'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { updatePercentiles } from './utils'
@@ -16,6 +15,8 @@ const MAPBOX_TOKEN =
 
 export const Map = props => {
   const {
+    viewport,
+    setViewport,
     category,
     data,
     setData,
@@ -25,13 +26,6 @@ export const Map = props => {
     setClickedFeature,
     budgetRange
   } = props
-  const [viewport, setViewport] = useState({
-    latitude: 51.49,
-    longitude: 0,
-    zoom: 8,
-    bearing: 0,
-    pitch: 10
-  })
   const [x, setX] = useState(null)
   const [y, setY] = useState(null)
   const [mapboxFilterBudgetRange, setMapboxFilterBudgetRange] = useState(null)
@@ -47,24 +41,7 @@ export const Map = props => {
       ])
   }, [budgetRange, category])
 
-  const geocoderApiOptions = {
-    country: 'gb',
-    proximity: { longitude: 0, latitude: 51.49 },
-    bbox: [-0.489, 51.28, 0.236, 51.686]
-  }
-
-  const _handleGeocoderSelect = result => {
-    const newViewport = {
-      ...viewport,
-      longitude: result.center[0],
-      latitude: result.center[1],
-      zoom: 10,
-      transitionDuration: 400,
-      transitionInterpolator: new FlyToInterpolator(),
-      transitionEasing: easeCubic
-    }
-    _onViewportChange(newViewport)
-  }
+  const _onViewportChange = viewport => setViewport(viewport)
 
   // FOR KEYBOARD USERS: HIGHLIGHT MAP WHEN TABBED TO, RUN THIS EFFECT ONCE ONLY
   useEffect(() => {
@@ -96,8 +73,6 @@ export const Map = props => {
     }
   }, [hoveredFeature]) // eslint-disable-line
 
-  const _onViewportChange = viewport => setViewport(viewport)
-
   const _onHover = event => {
     const {
       features,
@@ -106,11 +81,7 @@ export const Map = props => {
     const hoveredArea = features && features.find(f => f.layer.id === 'data')
 
     if (hoveredArea !== null && hoveredArea !== undefined) {
-      if (
-        hoveredFeature &&
-        hoveredFeature.properties.district !== hoveredArea.properties.district
-      )
-        setHoveredFeature(hoveredArea)
+      setHoveredFeature(hoveredArea)
     }
 
     setX(offsetX)
@@ -129,42 +100,30 @@ export const Map = props => {
   }
 
   return (
-    <div>
-      <div className="geocoder">
-        <MatGeocoder
-          inputPlaceholder="Search"
-          accessToken={MAPBOX_TOKEN}
-          onSelect={result => _handleGeocoderSelect(result)}
-          showLoader={true}
-          {...geocoderApiOptions}
-        />
-      </div>
-
-      <div style={{ height: '100%' }}>
-        <MapGL
-          {...viewport}
-          category={props.category}
-          width="100vw"
-          height="40vh"
-          mapStyle="./os_night-no-label.json"
-          onViewportChange={_onViewportChange}
-          mapboxApiAccessToken={MAPBOX_TOKEN}
-          onHover={_onHover}
-          onClick={_onClick}
-          scrollZoom={false}
-        >
-          <div style={{ position: 'absolute', right: '1rem', bottom: '1rem' }}>
-            <NavigationControl showCompass={false} />
-          </div>
-          <Source type="geojson" data={data}>
-            <Layer
-              {...dataLayer(props.colour)}
-              filter={mapboxFilterBudgetRange}
-            />
-            <Layer {...highlightLayer(props.colour)} filter={filterHighlight} />
-          </Source>
-        </MapGL>
-      </div>
+    <div style={{ height: '100%' }}>
+      <MapGL
+        {...viewport}
+        category={props.category}
+        width="100vw"
+        height="100vh"
+        mapStyle="./os_night-no-label.json"
+        onViewportChange={_onViewportChange}
+        mapboxApiAccessToken={MAPBOX_TOKEN}
+        onHover={_onHover}
+        onClick={_onClick}
+        scrollZoom={false}
+      >
+        <div style={{ position: 'absolute', right: '1rem', bottom: '1rem' }}>
+          <NavigationControl showCompass={false} />
+        </div>
+        <Source type="geojson" data={data}>
+          <Layer
+            {...dataLayer(props.colour)}
+            filter={mapboxFilterBudgetRange}
+          />
+          <Layer {...highlightLayer(props.colour)} filter={filterHighlight} />
+        </Source>
+      </MapGL>
     </div>
   )
 }
