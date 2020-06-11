@@ -17,11 +17,8 @@ import {
   Toolbar,
   Typography,
   Paper,
-  Checkbox,
   IconButton,
-  Tooltip,
-  FormControlLabel,
-  Switch
+  Tooltip
 } from '@material-ui/core'
 
 function descendingComparator(a, b, orderBy) {
@@ -51,7 +48,6 @@ function stableSort(array, comparator) {
 }
 
 function createHeadCells(properties, category) {
-  const categoryProperties = ['records', 'lower', 'median', 'upper']
   const returnVal = Object.keys(properties)
     .filter(el => el.indexOf(category) > -1)
     .map(el => ({
@@ -78,11 +74,8 @@ function EnhancedTableHead(props) {
     data,
     category,
     classes,
-    onSelectAllClick,
     order,
     orderBy,
-    numSelected,
-    rowCount,
     onRequestSort
   } = props
   const createSortHandler = property => event => {
@@ -220,20 +213,25 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export const EnhancedTable = props => {
-  const { data, category } = props
+  const { data, category, clickedFeature } = props
 
   if (!props.data) {
     return null
   }
 
-  const rows = data.features.map(el => createDataRow(el.properties, category))
+  let rows
+  if (clickedFeature !== null){    
+    rows = [createDataRow(clickedFeature.properties, category)]
+  } else {
+    rows = data.features.map(el => createDataRow(el.properties, category))
+  }
 
   const classes = useStyles()
   const [order, setOrder] = React.useState('asc')
   const [orderBy, setOrderBy] = React.useState('Room-district')
   const [selected, setSelected] = React.useState([])
   const [page, setPage] = React.useState(0)
-  const [dense, setDense] = React.useState(false)
+  const [dense] = React.useState(false)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
 
   const handleRequestSort = (event, property) => {
@@ -278,10 +276,6 @@ export const EnhancedTable = props => {
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
-  }
-
-  const handleChangeDense = event => {
-    setDense(event.target.checked)
   }
 
   const isSelected = name => selected.indexOf(name) !== -1
@@ -364,10 +358,6 @@ export const EnhancedTable = props => {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
     </div>
   )
 }

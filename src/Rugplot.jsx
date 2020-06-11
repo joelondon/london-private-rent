@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useEffect } from 'react'
 import * as d3 from 'd3'
 import colormap from 'colormap'
 
@@ -107,7 +107,7 @@ export const Rugplot = props => {
                   'fill',
                   feature => viridis[xQuantile(getMedian(feature))][1]
                 )
-                .attr('fill-opacity', 0.5)
+                .attr('fill-opacity', 0.9)
                 .attr('x', feature => xPos(getMedian(feature)))
                 .attr('width', feature => 2)
                 .attr('y', feature => (feature.length !== 0 ? 0 : 0))
@@ -144,6 +144,7 @@ export const Rugplot = props => {
               .attr('transform', `translate(${xPos(getMedian(feature))},0)`)
               .call(callout, feature.properties['district'])
             setHoveredFeature(feature)
+            setClickedFeature(feature)
           })
           .on('touchend mouseleave', () => tooltip.call(callout, null))
           .on('click', feature => setClickedFeature(feature))
@@ -156,6 +157,10 @@ export const Rugplot = props => {
               `translate(${xPos(getMedian(hoveredFeature))},0)`
             )
             .call(callout, hoveredFeature.properties['district'])
+        } else {
+          const feature = features.filter(f => f.properties.district === 'SE1')[0]
+          setHoveredFeature(feature)
+          setClickedFeature(feature)
         }
       }
     },

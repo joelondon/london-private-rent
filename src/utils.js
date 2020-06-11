@@ -1,8 +1,7 @@
 import { range } from 'd3-array'
 import { scaleQuantile } from 'd3-scale'
-// import * as d3 from 'd3'
-import featureCollection from './data/london-private-rents-detailed.json'
-// import featureCollection from './data/london-private-rents.json'
+// import featureCollection from './data/london-private-rents-detailed.json'
+import featureCollection from './data/london-private-rents.json'
 
 // ATTEMPT TO COMBINE JSON AND CSV
 // import featureCollection from './data/london-postcode-districts.json'

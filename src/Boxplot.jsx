@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useEffect } from 'react'
 import * as d3 from 'd3'
 import colormap from 'colormap'
 
@@ -62,10 +62,6 @@ export const Boxplot = props => {
         const decile = 10
         const getMedian = geojsonFeature =>
           geojsonFeature.properties[category + '-pc_median']
-        const xQuantile = d3
-          .scaleQuantile()
-          .domain(data.features.map(el => getMedian(el)))
-          .range(d3.range(decile))
 
         const viridis = colormap({ colormap: 'viridis', nshades: decile }).map(
           (el, i) => [i, el]
@@ -98,7 +94,8 @@ export const Boxplot = props => {
           const medians = data.features
             .map(feature => getMedian(feature))
             .filter(el => el !== undefined)
-            .sort()
+            .sort((a, b) => a - b)
+            
           const stop = Math.round(medians.length / decile)
           for (let i = 1; i < decile; i = i + 1) {
             gradient

@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Map } from './Map'
-import { Mapbox } from  './Mapbox'
 import { CategoryChooser } from './CategoryChooser'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 import { RangeSlider } from './RangeSlider'
@@ -8,20 +7,9 @@ import { Rugplot } from './Rugplot'
 import { Boxplot } from './Boxplot'
 import { EnhancedTable } from './EnhancedTable'
 import {
-  useMediaQuery,
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  InputBase
+  useMediaQuery
 } from '@material-ui/core'
-import { fade, makeStyles } from '@material-ui/core/styles'
-import MenuIcon from '@material-ui/icons/Menu'
-import SearchIcon from '@material-ui/icons/Search'
-import MapGL, {
-  Source,
-  Layer,
-  NavigationControl,
+import {
   FlyToInterpolator,
   WebMercatorViewport
 } from 'react-map-gl'
@@ -49,7 +37,7 @@ const geocoderApiOptions = {
 }
 
 export default () => {
-  const [category, setCategory] = useState('Room')
+  const [category, setCategory] = useState('3 Bed')
   const [colour, setColour] = useState('viridis')
   const [priceRange, setPriceRange] = useState([0, 1])
   const [budgetRange, setBudgetRange] = useState([0, 1])
@@ -136,62 +124,6 @@ export default () => {
       }),
     [prefersDarkMode]
   )
-  const useStyles = makeStyles(theme => ({
-    root: {
-      flexGrow: 1
-    },
-    menuButton: {
-      marginRight: theme.spacing(2)
-    },
-    title: {
-      flexGrow: 1,
-      display: 'none',
-      [theme.breakpoints.up('sm')]: {
-        display: 'block'
-      }
-    },
-    search: {
-      position: 'relative',
-      borderRadius: theme.shape.borderRadius,
-      backgroundColor: fade(theme.palette.common.white, 0.15),
-      '&:hover': {
-        backgroundColor: fade(theme.palette.common.white, 0.25)
-      },
-      marginLeft: 0,
-      width: '100%',
-      [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(1),
-        width: 'auto'
-      }
-    },
-    searchIcon: {
-      padding: theme.spacing(0, 2),
-      height: '100%',
-      position: 'absolute',
-      pointerEvents: 'none',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    inputRoot: {
-      color: 'inherit'
-    },
-    inputInput: {
-      padding: theme.spacing(1, 1, 1, 0),
-      // vertical padding + font size from searchIcon
-      paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-      transition: theme.transitions.create('width'),
-      width: '100%',
-      [theme.breakpoints.up('sm')]: {
-        width: '12ch',
-        '&:focus': {
-          width: '20ch'
-        }
-      }
-    }
-  }))
-
-  const classes = useStyles()
 
   return (
     <ThemeProvider theme={theme}>
@@ -208,10 +140,9 @@ export default () => {
         colour={colour}
         setColour={setColour}
         budgetRange={budgetRange}
-        width="100%"
       />
       
-      <div id="panel" style={{position:"absolute", top:0, right:0, width: "50vw", height:"100vh", overflowX: "visible", overflowY: "scroll"}}>
+      <div id="panel" style={{position:"absolute", background: '#333', top:0, right:0, width: "48%", height:"100vh", overflowX: "visible", overflowY: "scroll", padding: "1rem"}}>
         <MatGeocoder
           inputPlaceholder="Search"
           accessToken={MAPBOX_TOKEN}
@@ -240,7 +171,6 @@ export default () => {
           hoveredFeature={hoveredFeature}
           setHoveredFeature={setHoveredFeature}
           setClickedFeature={setClickedFeature}
-//           width={document.querySelector('#root').offsetWidth / 2}
           category={category}
         />
 
@@ -251,7 +181,7 @@ export default () => {
           clickedFeature={clickedFeature}
           category={category}
         />
-        <EnhancedTable data={data} category={category} />
+        <EnhancedTable clickedFeature={clickedFeature} data={data} category={category} />
       </div>
     </ThemeProvider>
   )

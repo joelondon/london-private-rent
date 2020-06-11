@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react'
 import MapGL, {
   Source,
   Layer,
-  NavigationControl,
-  FlyToInterpolator
+  NavigationControl
 } from 'react-map-gl'
-import { easeCubic } from 'd3'
 import { dataLayer, highlightLayer } from './map-style'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { updatePercentiles } from './utils'
@@ -22,12 +20,9 @@ export const Map = props => {
     setData,
     hoveredFeature,
     setHoveredFeature,
-    clickedFeature,
     setClickedFeature,
     budgetRange
   } = props
-  const [x, setX] = useState(null)
-  const [y, setY] = useState(null)
   const [mapboxFilterBudgetRange, setMapboxFilterBudgetRange] = useState(null)
 
   const [filterHighlight, setFilterHighlight] = useState(['in', 'district', ''])
@@ -75,28 +70,23 @@ export const Map = props => {
 
   const _onHover = event => {
     const {
-      features,
-      srcEvent: { offsetX, offsetY }
+      features
     } = event
     const hoveredArea = features && features.find(f => f.layer.id === 'data')
 
     if (hoveredArea !== null && hoveredArea !== undefined) {
       setHoveredFeature(hoveredArea)
+      setClickedFeature(hoveredArea)
     }
 
-    setX(offsetX)
-    setY(offsetY)
   }
 
   const _onClick = event => {
     const {
-      features,
-      srcEvent: { offsetX, offsetY }
+      features
     } = event
     const clickedFeature = features && features.find(f => f.layer.id === 'data')
     setClickedFeature(clickedFeature)
-    setX(offsetX)
-    setY(offsetY)
   }
 
   return (
@@ -104,7 +94,7 @@ export const Map = props => {
       <MapGL
         {...viewport}
         category={props.category}
-        width="100vw"
+        width="50%"
         height="100vh"
         mapStyle="./os_night-no-label.json"
         onViewportChange={_onViewportChange}

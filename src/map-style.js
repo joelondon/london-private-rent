@@ -13,7 +13,7 @@ export const dataLayer = scheme => {
     id: 'data',
     type: 'fill',
     paint: {
-      // 'fill-outline-color': 'rgba(255, 255, 255, .1)', // CAUSES ARTIFACTS
+//       'fill-outline-color': 'rgba(255, 255, 255, .1)', // CAUSES ARTIFACTS
       'fill-color': {
         property: 'percentile',
         stops: eval(scheme) // eslint-disable-line
@@ -29,6 +29,7 @@ export const highlightLayer = scheme => {
     type: 'line',
     paint: {
       'line-color': '#fff',
+      'line-width': 3,
       'line-opacity': [
       'case',
       ['boolean', ['feature-state', 'hover'], false],

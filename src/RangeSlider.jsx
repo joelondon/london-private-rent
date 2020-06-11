@@ -4,7 +4,6 @@ import { Typography, Slider } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   root: {
-//     width: '100%',
     'text-align': 'center',
     margin: '1em 1em',
     color: theme.palette.action.active
