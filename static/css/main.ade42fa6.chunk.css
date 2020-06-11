@@ -1,0 +1,2 @@
+body{margin:0;padding:0;display:flex;flex-direction:column;background:unset;font-family:Roboto,Helvetica,Arial,sans-serif;font-size:16px;-webkit-font-smoothing:antialiased;height:100vh}body.dark{background:#121516}.geocoder{z-index:4;margin:0 auto 10px;width:31%;max-width:calc(100% - 200px);transition:width .175s ease-in-out}.geocoder:focus-within{width:69%}
+/*# sourceMappingURL=main.ade42fa6.chunk.css.map */
