@@ -6,13 +6,8 @@ import { RangeSlider } from './RangeSlider'
 import { Rugplot } from './Rugplot'
 import { Boxplot } from './Boxplot'
 import { EnhancedTable } from './EnhancedTable'
-import {
-  useMediaQuery
-} from '@material-ui/core'
-import {
-  FlyToInterpolator,
-  WebMercatorViewport
-} from 'react-map-gl'
+import { useMediaQuery } from '@material-ui/core'
+import { FlyToInterpolator, WebMercatorViewport } from 'react-map-gl'
 import { easeCubic } from 'd3'
 import MatGeocoder from 'react-mui-mapbox-geocoder'
 
@@ -63,11 +58,32 @@ export default () => {
   const _onViewportChange = viewport => setViewport(viewport)
 
   const _handleGeocoderSelect = result => {
+    let feature
+    if (result.id.indexOf('postcode') !== -1) {
+      feature = data.features.filter(
+        f => f.properties.district === result.text.split(' ').shift()
+      )[0]
+    } else {
+      const matchingPostcodes = result.context.filter(
+        res => res.id.indexOf('postcode') !== -1
+      )
+      if (matchingPostcodes.length > 0) {
+        feature = data.features.filter(
+          f =>
+            f.properties.district ===
+            matchingPostcodes[0].text.split(' ').shift()
+        )[0]
+      }
+    }
+    if (feature) {
+      setHoveredFeature(feature)
+      setClickedFeature(feature)
+    }
     const newViewport = {
       ...viewport,
       longitude: result.center[0],
       latitude: result.center[1],
-      zoom: 14,
+      zoom: 11,
       transitionDuration: 400,
       transitionInterpolator: new FlyToInterpolator(),
       transitionEasing: easeCubic
@@ -109,7 +125,9 @@ export default () => {
         .filter(el => el !== undefined)
       const min = Math.min(...mins)
       const max = Math.max(...maxs)
+      // possible lowest/highest
       setPriceRange([min, max])
+      // user lowest/highest
       setBudgetRange([min, max])
     }
   }, [data, category])
@@ -141,8 +159,21 @@ export default () => {
         setColour={setColour}
         budgetRange={budgetRange}
       />
-      
-      <div id="panel" style={{position:"absolute", background: '#333', top:0, right:0, width: "48%", height:"100vh", overflowX: "visible", overflowY: "scroll", padding: "1rem"}}>
+
+      <div
+        id="panel"
+        style={{
+          position: 'absolute',
+          background: '#333',
+          top: 0,
+          right: 0,
+          width: '48%',
+          height: '100vh',
+          overflowX: 'visible',
+          overflowY: 'scroll',
+          padding: '1rem'
+        }}
+      >
         <MatGeocoder
           inputPlaceholder="Search"
           accessToken={MAPBOX_TOKEN}
@@ -181,7 +212,11 @@ export default () => {
           clickedFeature={clickedFeature}
           category={category}
         />
-        <EnhancedTable clickedFeature={clickedFeature} data={data} category={category} />
+        <EnhancedTable
+          clickedFeature={clickedFeature}
+          data={data}
+          category={category}
+        />
       </div>
     </ThemeProvider>
   )

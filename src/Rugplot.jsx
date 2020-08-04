@@ -21,12 +21,11 @@ export const Rugplot = props => {
   useEffect(
     () => {
       if (data && d3Container.current) {
-
         // HELPER for acessing geojson properties
         const getMedian = geojsonFeature =>
           geojsonFeature.properties[category + '-pc_median']
 
-        const features = data.features.filter(el => getMedian(el) !== undefined)
+        const { features } = data
 
         const svg = d3.select(d3Container.current)
 
@@ -34,6 +33,12 @@ export const Rugplot = props => {
           .scaleQuantile()
           .domain(features.map(el => getMedian(el)))
           .range(d3.range(10))
+
+        const colorScale = d3
+          .scaleQuantile()
+          .domain(features.map(el => getMedian(el)))
+          .range(d3.range(0, 1.1, 0.1))
+
         const viridis = colormap({ colormap: 'viridis', nshades: 10 }).map(
           (el, i) => [i, el]
         )
@@ -56,7 +61,10 @@ export const Rugplot = props => {
                 .filter(el => el !== undefined)
             )
           ])
-          .range([margin.left, d3Container.current.getBoundingClientRect().width - margin.right])
+          .range([
+            margin.left,
+            d3Container.current.getBoundingClientRect().width - margin.right
+          ])
 
         const callout = (g, value) => {
           if (!value) return g.style('display', 'none')
@@ -96,6 +104,10 @@ export const Rugplot = props => {
           path.attr('transform', `translate(0,${y * 1.1})`)
         }
 
+        const interpolateViridis =
+          //         feature => viridis[xQuantile(getMedian(feature))][1]
+          feature => d3.interpolateViridis(colorScale(getMedian(feature)))
+
         svg
           .selectAll('rect')
           .data(features)
@@ -103,10 +115,7 @@ export const Rugplot = props => {
             enter => {
               enter
                 .append('rect')
-                .attr(
-                  'fill',
-                  feature => viridis[xQuantile(getMedian(feature))][1]
-                )
+                .attr('fill', feature => interpolateViridis(feature))
                 .attr('fill-opacity', 0.9)
                 .attr('x', feature => xPos(getMedian(feature)))
                 .attr('width', feature => 2)
@@ -117,10 +126,7 @@ export const Rugplot = props => {
               update
                 .transition()
                 .attr('x', feature => xPos(getMedian(feature)))
-                .attr(
-                  'fill',
-                  feature => viridis[xQuantile(getMedian(feature))][1]
-                )
+                .attr('fill', feature => interpolateViridis(feature))
             },
             exit => exit.remove()
           )
@@ -158,7 +164,10 @@ export const Rugplot = props => {
             )
             .call(callout, hoveredFeature.properties['district'])
         } else {
-          const feature = features.filter(f => f.properties.district === 'SE1')[0]
+          // ON FIRST LOAD (NO HOVER) CLICK 'SE1'
+          const feature = features.filter(
+            f => f.properties.district === 'SE1'
+          )[0]
           setHoveredFeature(feature)
           setClickedFeature(feature)
         }

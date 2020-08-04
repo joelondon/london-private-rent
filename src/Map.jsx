@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import MapGL, {
-  Source,
-  Layer,
-  NavigationControl
-} from 'react-map-gl'
+import MapGL, { Source, Layer, NavigationControl } from 'react-map-gl'
 import { dataLayer, highlightLayer } from './map-style'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { updatePercentiles } from './utils'
@@ -59,7 +55,14 @@ export const Map = props => {
   }, []) // empty dep array = run once
 
   useEffect(() => {
-    setData(updatePercentiles(f => f.properties[category + '-pc_median']))
+    const data = updatePercentiles(f => f.properties[category + '-pc_median'])
+    const getMedian = geojsonFeature =>
+      geojsonFeature.properties[category + '-pc_median']
+
+    data.features = data.features.filter(
+      el => ['', undefined].indexOf(getMedian(el)) === -1
+    )
+    setData(data)
   }, [category]) // eslint-disable-line
 
   useEffect(() => {
@@ -69,22 +72,17 @@ export const Map = props => {
   }, [hoveredFeature]) // eslint-disable-line
 
   const _onHover = event => {
-    const {
-      features
-    } = event
+    const { features } = event
     const hoveredArea = features && features.find(f => f.layer.id === 'data')
 
     if (hoveredArea !== null && hoveredArea !== undefined) {
       setHoveredFeature(hoveredArea)
       setClickedFeature(hoveredArea)
     }
-
   }
 
   const _onClick = event => {
-    const {
-      features
-    } = event
+    const { features } = event
     const clickedFeature = features && features.find(f => f.layer.id === 'data')
     setClickedFeature(clickedFeature)
   }

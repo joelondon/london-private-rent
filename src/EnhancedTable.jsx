@@ -1,4 +1,3 @@
-import isNumeric from 'fast-isnumeric'
 import React from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
@@ -11,7 +10,6 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   TableSortLabel,
   Toolbar,
@@ -48,14 +46,46 @@ function stableSort(array, comparator) {
 }
 
 function createHeadCells(properties, category) {
-  const returnVal = Object.keys(properties)
-    .filter(el => el.indexOf(category) > -1)
-    .map(el => ({
-      id: el,
-      numeric: isNumeric(properties[el]),
+  //   const returnVal = Object.keys(properties)
+  //     .filter(el => el.indexOf(category) > -1)
+  //     .map(el => ({
+  //       id: el,
+  //       numeric: isNumeric(properties[el]),
+  //       disablePadding: true,
+  //       label: el.replace('_', ' ')
+  //     }))
+  //   returnVal.unshift({
+  //     id: 'Area',
+  //     numeric: false,
+  //     disablePadding: true,
+  //     label: 'Area'
+  //   })
+  const returnVal = [
+    {
+      id: 'Area',
+      numeric: false,
+      disablePadding: true
+      //     label: 'Area'
+    },
+    {
+      id: 'Quartile lower',
+      numeric: true,
       disablePadding: true,
-      label: el
-    }))
+      label: 'Quartile lower'
+    },
+    {
+      id: 'Median',
+      numeric: true,
+      disablePadding: true,
+      label: 'Median'
+    },
+    {
+      id: 'Quartile higher',
+      numeric: true,
+      disablePadding: true,
+      label: 'Quartile higher'
+    }
+  ]
   return returnVal
 }
 
@@ -70,14 +100,7 @@ function EnhancedTableHead(props) {
     return null
   }
 
-  const {
-    data,
-    category,
-    classes,
-    order,
-    orderBy,
-    onRequestSort
-  } = props
+  const { data, category, classes, order, orderBy, onRequestSort } = props
   const createSortHandler = property => event => {
     onRequestSort(event, property)
   }
@@ -196,9 +219,6 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     marginBottom: theme.spacing(2)
   },
-  table: {
-    minWidth: 750
-  },
   visuallyHidden: {
     border: 0,
     clip: 'rect(0 0 0 0)',
@@ -215,14 +235,30 @@ const useStyles = makeStyles(theme => ({
 export const EnhancedTable = props => {
   const { data, category, clickedFeature } = props
 
+  // CONDITIONAL RENDERING
   if (!props.data) {
     return null
   }
 
+  const objectfilter = (obj, search) =>
+    Object.entries(obj)
+      .filter(([k, v]) => k.includes(search))
+      .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {})
+
   let rows
-  if (clickedFeature !== null){    
-    rows = [createDataRow(clickedFeature.properties, category)]
+  if (clickedFeature !== null && clickedFeature !== undefined) {
+    // ONE RECORD
+    const row = createDataRow(clickedFeature.properties, category)
+    rows = [
+      { Area: clickedFeature.properties.district, ...objectfilter(row, 'pc') },
+      {
+        Area: clickedFeature.properties.borough,
+        ...objectfilter(row, 'borough')
+      },
+      { Area: 'London', ...objectfilter(row, 'london') }
+    ]
   } else {
+    // WHOLE DATASET
     rows = data.features.map(el => createDataRow(el.properties, category))
   }
 
@@ -232,7 +268,7 @@ export const EnhancedTable = props => {
   const [selected, setSelected] = React.useState([])
   const [page, setPage] = React.useState(0)
   const [dense] = React.useState(false)
-  const [rowsPerPage, setRowsPerPage] = React.useState(5)
+  const [rowsPerPage, setRowsPerPage] = React.useState(3)
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc'
@@ -286,7 +322,6 @@ export const EnhancedTable = props => {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table
             className={classes.table}
@@ -348,15 +383,6 @@ export const EnhancedTable = props => {
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
       </Paper>
     </div>
   )

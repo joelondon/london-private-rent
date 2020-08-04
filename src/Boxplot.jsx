@@ -42,7 +42,10 @@ export const Boxplot = props => {
         const xPos = d3
           .scaleLinear()
           .domain([min, max])
-          .range([margin.left, d3Container.current.getBoundingClientRect().width - margin.right])
+          .range([
+            margin.left,
+            d3Container.current.getBoundingClientRect().width - margin.right
+          ])
         const format = d3.format('.2s')
         const xAxis = g =>
           g
@@ -50,7 +53,6 @@ export const Boxplot = props => {
             .attr('transform', `translate(0,${height})`)
             .attr('style', `color:white`)
             .call(d3.axisBottom(xPos).tickFormat(d => `£${format(d)}`))
-
         const reverseTicks = g =>
           g
             .selectAll('.xAxis .tick line')
@@ -59,52 +61,53 @@ export const Boxplot = props => {
             .attr('stroke-opacity', 0.5)
             .attr('stroke-dasharray', '2,2')
             .attr('fill', 'white')
-        const decile = 10
-        const getMedian = geojsonFeature =>
-          geojsonFeature.properties[category + '-pc_median']
-
-        const viridis = colormap({ colormap: 'viridis', nshades: decile }).map(
-          (el, i) => [i, el]
-        )
-
         svg.call(xAxis)
         svg.call(reverseTicks)
 
-        const boxEnter = (selection, dataset, className, half) => {
-          // could be log
-          let gradientIdentifier = 'gradientLinear'
-
-          const defs = selection.append('defs')
-          const gradient = defs
-            .append('linearGradient')
-            .attr('id', gradientIdentifier)
-            .attr('x1', '0%')
-            .attr('y1', '0%')
-            .attr('x2', '100%')
-            .attr('y2', '0%')
-            .attr('gradientUnits', 'userSpaceOnUse')
-
-          gradient
-            .append('stop')
-            .attr('class', 'start')
-            .attr('offset', '0%')
-            .attr('stop-color', '#440154')
-
-          // linearGradient stops
-          const medians = data.features
-            .map(feature => getMedian(feature))
-            .filter(el => el !== undefined)
-            .sort((a, b) => a - b)
-            
-          const stop = Math.round(medians.length / decile)
+        // LINEAR GRADIENT
+        const defs = svg.append('defs')
+        let gradientIdentifier = 'gradientLinear'
+        // linearGradient stops
+        const getMedian = geojsonFeature =>
+          geojsonFeature.properties[category + '-pc_median']
+        const decile = 10
+        const medians = data.features
+          .map(feature => getMedian(feature))
+          .sort((a, b) => a - b)
+        const stop = Math.round(medians.length / decile)
+        const decileData = () => {
+          let deciles = []
           for (let i = 1; i < decile; i = i + 1) {
-            gradient
-              .append('stop')
-              .attr('class', 'end')
-              .attr('offset', (xPos(medians[i * stop]) / d3Container.current.getBoundingClientRect().width) * 100 + '%')
-              .attr('stop-color', viridis[i][1])
+            deciles.push(medians[i * stop])
           }
+          return deciles
+        }
+        const colorScale = d3
+//           .scaleLinear()
+          .scaleSequential()
+          .domain([min, 6000]) // input bounds
+          .interpolator(d3.interpolateViridis);
+          
+//           .range([0,1]) // output bounds
+        const interpolateViridis =
+          value => d3.interpolateViridis(colorScale(value))
 
+        const gradient = defs
+          .append('linearGradient')
+          .attr('id', gradientIdentifier)
+          .attr('x1', '0%')
+          .attr('y1', '0%')
+          .attr('x2', '100%')
+          .attr('y2', '0%')
+          .attr('gradientUnits', 'userSpaceOnUse')
+        // first stop on scale
+        gradient
+          .append('stop')
+          .attr('class', 'start')
+          .attr('offset', '0%')
+          .attr('stop-color', '#440154')
+
+        const boxEnter = (selection, dataset, className, half) => {
           selection
             .append('line')
             .attr('stroke-width', `20px`)
@@ -144,6 +147,7 @@ export const Boxplot = props => {
         }
 
         const boxUpdate = (selection, dataset, half) => {
+          // could be log
           selection
             .transition()
             .attr('x1', dataset =>
@@ -186,7 +190,7 @@ export const Boxplot = props => {
           return selection
         }
 
-        const lines = (className, half) => {
+        const boxes = (className, half) => {
           svg
             .selectAll('line.' + className, 'text')
             .data(postcode.postcodeData)
@@ -200,8 +204,34 @@ export const Boxplot = props => {
               exit => exit.remove()
             )
         }
-        lines('left', 1)
-        lines('right', 2)
+        boxes('left', 1)
+        boxes('right', 2)
+
+        const gradients = () => {
+          gradient
+            .selectAll('stop')
+            .data(decileData())
+            .join(
+              enter => {
+                enter
+                  .append('stop')
+                  .attr(
+                    'offset',
+                    d =>
+                      (xPos(d) /
+                        d3Container.current.getBoundingClientRect().width) *
+                        100 +
+                      '%'
+                  )
+                  .attr('stop-color', d => colorScale(d))
+              },
+              update => {
+                update.attr('offset', d => d[0]).attr('stop-color', d => d[1])
+              },
+              exit => exit.remove()
+            )
+        }
+        gradients()
       }
     },
     /*
