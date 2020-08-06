@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from 'react'
 import * as d3 from 'd3'
-import colormap from 'colormap'
 
 export const Rugplot = props => {
   /* The useRef Hook creates a variable that "holds on" to a value across rendering
@@ -38,10 +37,6 @@ export const Rugplot = props => {
           .scaleQuantile()
           .domain(features.map(el => getMedian(el)))
           .range(d3.range(0, 1.1, 0.1))
-
-        const viridis = colormap({ colormap: 'viridis', nshades: 10 }).map(
-          (el, i) => [i, el]
-        )
 
         const margin = { top: 0, right: 32, bottom: 0, left: 0 }
 
@@ -104,9 +99,8 @@ export const Rugplot = props => {
           path.attr('transform', `translate(0,${y * 1.1})`)
         }
 
-        const interpolateViridis =
-          //         feature => viridis[xQuantile(getMedian(feature))][1]
-          feature => d3.interpolateViridis(colorScale(getMedian(feature)))
+        const interpolateViridis = feature =>
+          d3.interpolateViridis(colorScale(getMedian(feature)))
 
         svg
           .selectAll('rect')

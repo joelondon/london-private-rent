@@ -64,10 +64,6 @@ export const Boxplot = props => {
         svg.call(xAxis)
         svg.call(reverseTicks)
 
-        // LINEAR GRADIENT
-        const defs = svg.append('defs')
-        let gradientIdentifier = 'gradientLinear'
-        // linearGradient stops
         const getMedian = geojsonFeature =>
           geojsonFeature.properties[category + '-pc_median']
         const decile = 10
@@ -83,35 +79,42 @@ export const Boxplot = props => {
           return deciles
         }
         const colorScale = d3
-//           .scaleLinear()
           .scaleSequential()
-          .domain([min, 6000]) // input bounds
-          .interpolator(d3.interpolateViridis);
-          
-//           .range([0,1]) // output bounds
-        const interpolateViridis =
-          value => d3.interpolateViridis(colorScale(value))
+          .domain([decileData().shift(), decileData().pop()]) // input bounds
+          .interpolator(d3.interpolateViridis)
 
-        const gradient = defs
-          .append('linearGradient')
-          .attr('id', gradientIdentifier)
-          .attr('x1', '0%')
-          .attr('y1', '0%')
-          .attr('x2', '100%')
-          .attr('y2', '0%')
-          .attr('gradientUnits', 'userSpaceOnUse')
-        // first stop on scale
-        gradient
-          .append('stop')
-          .attr('class', 'start')
-          .attr('offset', '0%')
-          .attr('stop-color', '#440154')
+        //         const colorScale = d3
+        //           .scaleQuantile()
+        //           .domain(medians)
+        //           .range(d3.range(0, 1.1, 0.1))
+
+        //         const interpolateViridis =
+        //           feature => d3.interpolateViridis//(colorScale(getMedian(feature)))
 
         const boxEnter = (selection, dataset, className, half) => {
+          // LINEAR GRADIENT
+          //         const defs = selection.select('defs')
+          //         let gradientIdentifier = 'gradientLinear'
+          const gradient = selection
+            .select('#gradientLinear')
+            //           .append('linearGradient')
+            //           .attr('id', gradientIdentifier)
+            .attr('x1', '0%')
+            .attr('y1', '0%')
+            .attr('x2', '100%')
+            .attr('y2', '0%')
+            .attr('gradientUnits', 'userSpaceOnUse')
+          //         // first stop on scale
+          //         gradient
+          //           .append('stop')
+          //           .attr('offset', '0%')
+          //           .attr('stop-color', '#440154')
+          //           .attr('class', 'start')
+
           selection
             .append('line')
             .attr('stroke-width', `20px`)
-            .attr('stroke', `url(#${gradientIdentifier})`)
+            .attr('stroke', `url(#gradientLinear)`)
             .attr('class', className)
             .attr('y1', (dataset, i) => yPos(i))
             .attr('y2', (dataset, i) => yPos(i))
@@ -208,7 +211,8 @@ export const Boxplot = props => {
         boxes('right', 2)
 
         const gradients = () => {
-          gradient
+          svg
+            .select('#gradientLinear')
             .selectAll('stop')
             .data(decileData())
             .join(
@@ -226,7 +230,16 @@ export const Boxplot = props => {
                   .attr('stop-color', d => colorScale(d))
               },
               update => {
-                update.attr('offset', d => d[0]).attr('stop-color', d => d[1])
+                update
+                  .attr(
+                    'offset',
+                    d =>
+                      (xPos(d) /
+                        d3Container.current.getBoundingClientRect().width) *
+                        100 +
+                      '%'
+                  )
+                  .attr('stop-color', d => colorScale(d))
               },
               exit => exit.remove()
             )
@@ -257,6 +270,9 @@ export const Boxplot = props => {
   return (
     <svg style={style} ref={d3Container}>
       <g className="xAxis" />
+      <defs>
+        <linearGradient id="gradientLinear" />
+      </defs>
     </svg>
   )
 }
