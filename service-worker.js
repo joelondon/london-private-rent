@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/london-private-rent/precache-manifest.4a85238c90a838e37dfb6b0b68946863.js"
+  "/london-private-rent/precache-manifest.f6ffdf828529ca710db2f0175f3137e5.js"
 );
 
 workbox.clientsClaim();
