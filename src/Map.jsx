@@ -94,7 +94,7 @@ export const Map = props => {
         category={props.category}
         width="50%"
         height="100vh"
-        mapStyle="./os_night-no-label.json"
+        mapStyle="./os_light.json"
         onViewportChange={_onViewportChange}
         mapboxApiAccessToken={MAPBOX_TOKEN}
         onHover={_onHover}

@@ -51,7 +51,7 @@ export const Boxplot = props => {
           g
             .select('g.xAxis')
             .attr('transform', `translate(0,${height})`)
-            .attr('style', `color:white`)
+//             .attr('style', `color:white`)
             .call(d3.axisBottom(xPos).tickFormat(d => `£${format(d)}`))
         const reverseTicks = g =>
           g
@@ -83,22 +83,10 @@ export const Boxplot = props => {
           .domain([decileData().shift(), decileData().pop()]) // input bounds
           .interpolator(d3.interpolateViridis)
 
-        //         const colorScale = d3
-        //           .scaleQuantile()
-        //           .domain(medians)
-        //           .range(d3.range(0, 1.1, 0.1))
-
-        //         const interpolateViridis =
-        //           feature => d3.interpolateViridis//(colorScale(getMedian(feature)))
-
         const boxEnter = (selection, dataset, className, half) => {
           // LINEAR GRADIENT
-          //         const defs = selection.select('defs')
-          //         let gradientIdentifier = 'gradientLinear'
           const gradient = selection
             .select('#gradientLinear')
-            //           .append('linearGradient')
-            //           .attr('id', gradientIdentifier)
             .attr('x1', '0%')
             .attr('y1', '0%')
             .attr('x2', '100%')
@@ -143,7 +131,7 @@ export const Boxplot = props => {
               .attr('x', d => xPos(d[2]) + 2)
               .attr('y', (d, i) => textPos(i))
               .style('text-anchor', 'start')
-              .style('fill', 'white')
+//               .style('fill', 'white')
           }
 
           return selection
@@ -272,6 +260,7 @@ export const Boxplot = props => {
       <g className="xAxis" />
       <defs>
         <linearGradient id="gradientLinear" />
+        <stop offset="0%" stopColor="#440154" className="start"></stop>
       </defs>
     </svg>
   )

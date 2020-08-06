@@ -131,7 +131,7 @@ export const Rugplot = props => {
           svg
             .select('g#axis')
             .attr('transform', `translate(0,20)`)
-            .attr('style', `color:white`)
+//             .attr('style', `color:white`)
             .call(d3.axisBottom(xPos).tickFormat(d => `£${format(d)}`))
         svg.call(xAxis)
 

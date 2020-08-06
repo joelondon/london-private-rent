@@ -51,7 +51,7 @@ export default () => {
       longitude: 0,
       zoom: 8,
       bearing: 0,
-      pitch: 40
+      pitch: 0
     })
   )
 
@@ -132,7 +132,7 @@ export default () => {
     }
   }, [data, category])
 
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: light)')
   const theme = React.useMemo(
     () =>
       createMuiTheme({
@@ -164,7 +164,7 @@ export default () => {
         id="panel"
         style={{
           position: 'absolute',
-          background: '#333',
+          background: '#eee',
           top: 0,
           right: 0,
           width: '48%',
