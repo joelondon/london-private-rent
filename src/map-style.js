@@ -30,16 +30,7 @@ export const highlightLayer = scheme=>{
 
       'line-color': '#fff',
       'line-width': 1,
-      'line-opacity': 1 // ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.5]
-      //       'fill-extrusion-color': {
-      //         property: 'percentile',
-      //         stops: eval(scheme) // eslint-disable-line
-      //       },
-      //       'fill-extrusion-height': 
-      //       {
-      //         property: 'percentile',
-      //         stops:  [[0,500],[1,1000],[2,1500],[3,2000],[4,2500],[5,3000],[6,4000],[7,4500],[8,5000],[9, 5500]] // eslint-disable-line
-      //       }
+      'line-opacity': 1 
     }
   }
 }
