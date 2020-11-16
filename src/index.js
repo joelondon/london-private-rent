@@ -5,4 +5,4 @@ import App from './App'
 import './scss/style.scss'
 
 const rootElement = document.getElementById('root')
-ReactDOM.render(<App />, rootElement)
+ReactDOM.render(<App width={rootElement.offsetWidth} height={document.documentElement.clientHeight} />, rootElement)

@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react'
 import * as d3 from 'd3'
-import colormap from 'colormap'
+// import colormap from 'colormap'
 
 export const Boxplot = props => {
   /* The useRef Hook creates a variable that "holds on" to a value across rendering
@@ -51,7 +51,7 @@ export const Boxplot = props => {
           g
             .select('g.xAxis')
             .attr('transform', `translate(0,${height})`)
-//             .attr('style', `color:white`)
+            .attr('style', `color:white`)
             .call(d3.axisBottom(xPos).tickFormat(d => `£${format(d)}`))
         const reverseTicks = g =>
           g
@@ -73,11 +73,12 @@ export const Boxplot = props => {
         const stop = Math.round(medians.length / decile)
         const decileData = () => {
           let deciles = []
-          for (let i = 1; i < decile; i = i + 1) {
+          for (let i = 0; i < decile; i = i + 1) {
             deciles.push(medians[i * stop])
           }
           return deciles
         }
+
         const colorScale = d3
           .scaleSequential()
           .domain([decileData().shift(), decileData().pop()]) // input bounds
@@ -131,7 +132,7 @@ export const Boxplot = props => {
               .attr('x', d => xPos(d[2]) + 2)
               .attr('y', (d, i) => textPos(i))
               .style('text-anchor', 'start')
-//               .style('fill', 'white')
+              .style('fill', 'white')
           }
 
           return selection
@@ -260,7 +261,7 @@ export const Boxplot = props => {
       <g className="xAxis" />
       <defs>
         <linearGradient id="gradientLinear" />
-        <stop offset="0%" stopColor="#440154" className="start"></stop>
+        <stop offset="0%" stopColor="#440154" className="start" />
       </defs>
     </svg>
   )

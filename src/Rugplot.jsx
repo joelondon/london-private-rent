@@ -28,23 +28,14 @@ export const Rugplot = props => {
 
         const svg = d3.select(d3Container.current)
 
-        const xQuantile = d3
-          .scaleQuantile()
-          .domain(features.map(el => getMedian(el)))
-          .range(d3.range(10))
-
-        const colorScale = d3
-          .scaleQuantile()
-          .domain(features.map(el => getMedian(el)))
-          .range(d3.range(0, 1.1, 0.1))
-
         const margin = { top: 0, right: 32, bottom: 0, left: 0 }
 
         svg.selectAll('rect').data(features)
 
         const xPos = d3
           .scaleLinear()
-          .domain([
+          .domain(
+          [
             Math.min(
               ...data.features
                 .map(el => el.properties[category + '-pc_lower'])
@@ -55,7 +46,8 @@ export const Rugplot = props => {
                 .map(el => el.properties[category + '-pc_upper'])
                 .filter(el => el !== undefined)
             )
-          ])
+          ]
+          )
           .range([
             margin.left,
             d3Container.current.getBoundingClientRect().width - margin.right
@@ -99,6 +91,13 @@ export const Rugplot = props => {
           path.attr('transform', `translate(0,${y * 1.1})`)
         }
 
+        const colorScale = d3
+          .scaleQuantile()
+          .domain(
+          features.map(el => getMedian(el)).filter(el => el !== undefined)
+          )
+          .range(d3.range(0, 1.1, 0.1))
+
         const interpolateViridis = feature =>
           d3.interpolateViridis(colorScale(getMedian(feature)))
 
@@ -112,7 +111,7 @@ export const Rugplot = props => {
                 .attr('fill', feature => interpolateViridis(feature))
                 .attr('fill-opacity', 0.9)
                 .attr('x', feature => xPos(getMedian(feature)))
-                .attr('width', feature => 2)
+                .attr('width', feature => 1)
                 .attr('y', feature => (feature.length !== 0 ? 0 : 0))
                 .attr('height', 20)
             },
@@ -131,7 +130,7 @@ export const Rugplot = props => {
           svg
             .select('g#axis')
             .attr('transform', `translate(0,20)`)
-//             .attr('style', `color:white`)
+            .attr('style', `color:white`)
             .call(d3.axisBottom(xPos).tickFormat(d => `£${format(d)}`))
         svg.call(xAxis)
 

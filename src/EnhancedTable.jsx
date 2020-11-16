@@ -96,7 +96,7 @@ function createDataRow(properties, category) {
 }
 
 function EnhancedTableHead(props) {
-  if (!props.data) {
+  if (!props.data || !props.category) {
     return null
   }
 
@@ -104,7 +104,6 @@ function EnhancedTableHead(props) {
   const createSortHandler = property => event => {
     onRequestSort(event, property)
   }
-
   const headCells = createHeadCells(data.features[0].properties, category)
 
   return (

@@ -1,13 +1,13 @@
 // For more information on data-driven styles, see https://www.mapbox.com/help/gl-dds-ref/
-import colormap from 'colormap'
+import * as d3 from 'd3'
 
-// eslint-disable-next-line
-const viridis = colormap({
-  colormap: 'viridis',
-  nshades: 10
-}).map((el,i)=>[i, el])
+const stops = () => {
+  const sequentialScale = d3.scaleSequential(d3.interpolateViridis).domain([1,10])
+  return sequentialScale.ticks().map((el,i)  => [i,  sequentialScale(el)])
+}
 
-export const dataLayer = scheme=>{
+export const dataLayer = () => {
+
   return {
     beforeId: 'Suburban names',
     id: 'data',
@@ -15,13 +15,14 @@ export const dataLayer = scheme=>{
     paint: {
       'fill-color': {
         property: 'percentile',
-        stops: eval(scheme)// eslint-disable-line
+        stops: stops()
       },
       'fill-opacity': 0.8
     }
   }
 }
-export const highlightLayer = scheme=>{
+
+export const highlightLayer = () =>{
   return {
     beforeId: 'Suburban names',
     id: 'highlight',
@@ -30,7 +31,7 @@ export const highlightLayer = scheme=>{
 
       'line-color': '#fff',
       'line-width': 1,
-      'line-opacity': 1 
+      'line-opacity': 1
     }
   }
 }

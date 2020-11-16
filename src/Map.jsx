@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import MapGL, { Source, Layer, NavigationControl } from 'react-map-gl'
+import MapGL, { StaticMap, Source, Layer, NavigationControl } from 'react-map-gl'
 import { dataLayer, highlightLayer } from './map-style'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { updatePercentiles } from './utils'
+import DeckGL, {GeoJsonLayer} from 'deck.gl';
 
 const MAPBOX_TOKEN =
   'pk.eyJ1IjoiaHAtbnVuZXMiLCJhIjoiY2pqNHAxaHIxMDA3aTNrbW15OGx2NW4ybiJ9.pHzT2FAtpO-Xhnc3PzJsFA'
@@ -36,11 +37,11 @@ export const Map = props => {
 
   // FOR KEYBOARD USERS: HIGHLIGHT MAP WHEN TABBED TO, RUN THIS EFFECT ONCE ONLY
   useEffect(() => {
-    const input = document.querySelector('.mapboxgl-canvas')
-    const inputParent = input.parentNode.parentNode.parentNode.parentNode
-    input.onblur = inputBlur
-    input.onfocus = inputFocus
-    inputParent.tabIndex = -1
+//     const input = document.querySelector('.mapboxgl-canvas')
+//     const inputParent = input.parentNode.parentNode.parentNode.parentNode
+//     input.onblur = inputBlur
+//     input.onfocus = inputFocus
+//     inputParent.tabIndex = -1
 
     function inputBlur() {
       document.querySelector('.overlays').style.boxShadow = ''
@@ -71,6 +72,13 @@ export const Map = props => {
     }
   }, [hoveredFeature]) // eslint-disable-line
 
+function rgbToHex(r, g, b) {
+  r=Math.round(r*256)
+  g=Math.round(g*256)
+  b=Math.round(b*256)
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
   const _onHover = event => {
     const { features } = event
     const hoveredArea = features && features.find(f => f.layer.id === 'data')
@@ -78,6 +86,8 @@ export const Map = props => {
     if (hoveredArea !== null && hoveredArea !== undefined) {
       setHoveredFeature(hoveredArea)
       setClickedFeature(hoveredArea)
+      const rgb = hoveredArea.layer.paint['fill-color']
+//       console.log(rgbToHex(rgb.r,rgb.g,rgb.b))
     }
   }
 
@@ -87,14 +97,34 @@ export const Map = props => {
     setClickedFeature(clickedFeature)
   }
 
+  const onClick = info => {
+    if (info.object) {
+      // eslint-disable-next-line
+      alert(`${info.object.properties.name} `);
+    }
+  };
+
+    if (data) {
+//       console.log('data',data)
+  const layers = [
+    new GeoJsonLayer({
+      id: 'postcodes',
+      data: data,
+      // Styles
+      filled: true,
+      getFillColor: [200, 0, 80, 180],
+      // Interactive props
+      pickable: true,
+      autoHighlight: true,
+      onClick
+    })]
   return (
     <div style={{ height: '100%' }}>
       <MapGL
         {...viewport}
         category={props.category}
-        width="50%"
-        height="100vh"
-        mapStyle="./os_light.json"
+        width="100%"
+        mapStyle="./os_night.json"
         onViewportChange={_onViewportChange}
         mapboxApiAccessToken={MAPBOX_TOKEN}
         onHover={_onHover}
@@ -106,12 +136,23 @@ export const Map = props => {
         </div>
         <Source type="geojson" data={data}>
           <Layer
-            {...dataLayer(props.colour)}
+            {...dataLayer(props.colourScheme, props.category + '-pc_median')}
             filter={mapboxFilterBudgetRange}
           />
-          <Layer {...highlightLayer(props.colour)} filter={filterHighlight} />
+          <Layer
+            {...highlightLayer(props.colourScheme)}
+            filter={filterHighlight}
+          />
         </Source>
       </MapGL>
     </div>
+//     <div style={{ height: '100%' }}>
+//         <DeckGL initialViewState={viewport} controller={true} layers={layers}>
+//       <StaticMap mapboxApiAccessToken={MAPBOX_TOKEN} mapStyle="./os_night-no-label.json" />
+//     </DeckGL>
+//     </div>
   )
+    } else {
+      return(<div></div>)
+    }
 }
